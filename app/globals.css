@@ -328,6 +328,8 @@ pre { font-family: var(--font); }
   background: rgba(0,255,65,0.05);
   transform: translateY(-2px);
 }
+.btn--icon { gap: 8px; }
+.btn--icon svg { flex-shrink: 0; }
 
 /* Command History */
 .cmd-history { padding: 80px 24px; max-width: 800px; margin: 0 auto; }
