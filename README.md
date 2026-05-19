@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://niefa.xyz">Website</a> · <a href="#-quick-start">Quick Start</a> · <a href="https://x.com/vornimbus">X / Twitter</a>
+  <a href="https://niefa.xyz">Website</a> · <a href="#-quick-start">Quick Start</a> · <a href="https://x.com/niefa_xyz">X / Twitter</a>
 </p>
 
 ---
@@ -130,5 +130,5 @@ MIT License — use it, modify it, ship it.
 ---
 
 <p align="center">
-  Built with obsession by <a href="https://x.com/vornimbus">NIEFA</a>
+  Built with obsession by <a href="https://x.com/niefa_xyz">NIEFA</a>
 </p>

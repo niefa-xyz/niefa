@@ -514,7 +514,7 @@ export default function Home() {
             <a href="#features" onClick={() => setMenuOpen(false)}>[features]</a>
             <a href="#templates" onClick={() => setMenuOpen(false)}>[templates]</a>
             <a href="#deploy" onClick={() => setMenuOpen(false)}>[deploy]</a>
-            <a href="https://x.com/vornimbus" target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}>[x.com]</a>
+            <a href="https://x.com/niefa_xyz" target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}>[x.com]</a>
           </div>
           <button className={`nav__burger ${menuOpen ? 'nav__burger--open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>
             <span /><span /><span />
@@ -550,7 +550,7 @@ export default function Home() {
 
             <div className="hero__actions">
               <a href="#deploy" className="btn btn--primary">[ Deploy an Agent ]</a>
-              <a href="https://x.com/vornimbus" target="_blank" rel="noopener noreferrer" className="btn btn--outline">[ Follow on X ]</a>
+              <a href="https://x.com/niefa_xyz" target="_blank" rel="noopener noreferrer" className="btn btn--outline">[ Follow on X ]</a>
             </div>
 
           </div>
@@ -709,7 +709,7 @@ export default function Home() {
           <pre className="cta__ascii">{ASCII_LOGO}</pre>
           <div className="cta__actions">
             <a href="#deploy" className="btn btn--primary">[ Get Started Free ]</a>
-            <a href="https://x.com/vornimbus" target="_blank" rel="noopener noreferrer" className="btn btn--outline">[ Follow on X ]</a>
+            <a href="https://x.com/niefa_xyz" target="_blank" rel="noopener noreferrer" className="btn btn--outline">[ Follow on X ]</a>
           </div>
         </div>
       </Section>
@@ -730,13 +730,13 @@ export default function Home() {
             <div className="footer__col">
               <h4>[community]</h4>
               <ul>
-                <li><a href="https://x.com/vornimbus" target="_blank" rel="noopener noreferrer">&gt; X (Twitter)</a></li>
+                <li><a href="https://x.com/niefa_xyz" target="_blank" rel="noopener noreferrer">&gt; X (Twitter)</a></li>
               </ul>
             </div>
           </div>
           <div className="footer__bottom">
             <span>&copy; 2026 NIEFA. All rights reserved.</span>
-            <a href="https://x.com/vornimbus" target="_blank" rel="noopener noreferrer" className="footer__x">[x.com]</a>
+            <a href="https://x.com/niefa_xyz" target="_blank" rel="noopener noreferrer" className="footer__x">[x.com]</a>
           </div>
         </div>
       </footer>
