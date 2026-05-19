@@ -97,11 +97,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the NIEFA dashboard.
 
 ## Deploy
 
-NIEFA is optimized for **Vercel** — zero configuration needed.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/niefa-xyz/niefa)
-
-Or deploy manually:
+deploy manually:
 
 ```bash
 npm run build
