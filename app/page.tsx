@@ -399,6 +399,24 @@ function AgentCard({ agent, onStop, onDelete }: {
   )
 }
 
+// ─── Copy Button ───────────────────────────────────────────────────────────────
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {}
+  }
+  return (
+    <button className="token__copy" onClick={handleCopy}>
+      {copied ? '[copied]' : '[copy]'}
+    </button>
+  )
+}
+
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -514,6 +532,7 @@ export default function Home() {
             <a href="#features" onClick={() => setMenuOpen(false)}>[features]</a>
             <a href="#templates" onClick={() => setMenuOpen(false)}>[templates]</a>
             <a href="#deploy" onClick={() => setMenuOpen(false)}>[deploy]</a>
+            <a href="#token" onClick={() => setMenuOpen(false)}>[token]</a>
             <a href="https://x.com/niefa_xyz" target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}>[x.com]</a>
           </div>
           <button className={`nav__burger ${menuOpen ? 'nav__burger--open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>
@@ -700,6 +719,54 @@ export default function Home() {
           {TECH_BADGES.map(t => (
             <span key={t} className="tech-badge">[{t}]</span>
           ))}
+        </div>
+      </Section>
+
+      {/* ─── Token ─── */}
+      <Section id="token" className="token">
+        <div className="section-header">
+          <span className="section-tag">[$NIEFA]</span>
+          <h2 className="section-heading">&gt; $NIEFA Token_</h2>
+          <p className="section-sub">The native token powering the NIEFA ecosystem.</p>
+        </div>
+        <div className="token__card">
+          <div className="token__header">
+            <div className="token__symbol">$NIEFA</div>
+            <span className="token__badge">ERC-20</span>
+          </div>
+          <div className="token__ca">
+            <span className="token__ca-label">Contract Address:</span>
+            <div className="token__ca-value">
+              <code>0xe777f8da063c0252575f09e0f6475a0994f2bba3</code>
+              <CopyButton text="0xe777f8da063c0252575f09e0f6475a0994f2bba3" />
+            </div>
+          </div>
+          <div className="token__divider">{'─'.repeat(60)}</div>
+          <div className="token__utility">
+            <h3 className="token__utility-title">Utility</h3>
+            <div className="token__utility-grid">
+              <div className="token__utility-item">
+                <span className="token__utility-icon">[AG]</span>
+                <span className="token__utility-name">Agent Deployment</span>
+                <span className="token__coming-soon">coming soon</span>
+              </div>
+              <div className="token__utility-item">
+                <span className="token__utility-icon">[TL]</span>
+                <span className="token__utility-name">Tool Marketplace</span>
+                <span className="token__coming-soon">coming soon</span>
+              </div>
+              <div className="token__utility-item">
+                <span className="token__utility-icon">[GV]</span>
+                <span className="token__utility-name">Governance</span>
+                <span className="token__coming-soon">coming soon</span>
+              </div>
+              <div className="token__utility-item">
+                <span className="token__utility-icon">[ST]</span>
+                <span className="token__utility-name">Staking</span>
+                <span className="token__coming-soon">coming soon</span>
+              </div>
+            </div>
+          </div>
         </div>
       </Section>
 
