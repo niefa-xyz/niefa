@@ -532,8 +532,8 @@ export default function Home() {
             <a href="#features" onClick={() => setMenuOpen(false)}>[features]</a>
             <a href="#templates" onClick={() => setMenuOpen(false)}>[templates]</a>
             <a href="#deploy" onClick={() => setMenuOpen(false)}>[deploy]</a>
-            <a href="#token" onClick={() => setMenuOpen(false)}>[token]</a>
-            <a href="https://x.com/niefa_xyz" target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}>[x.com]</a>
+            <a href="#token" onClick={() => setMenuOpen(false)}>[$NIEFA]</a>
+            <a href="#sources" onClick={() => setMenuOpen(false)}>[source]</a>
           </div>
           <button className={`nav__burger ${menuOpen ? 'nav__burger--open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>
             <span /><span /><span />
@@ -774,6 +774,41 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </Section>
+
+      {/* ─── Source ─── */}
+      <Section id="sources" className="sources">
+        <div className="section-header">
+          <span className="section-tag">[open_source]</span>
+          <h2 className="section-heading">&gt; Source Code_</h2>
+          <p className="section-sub">NIEFA is fully open source. Clone, fork, and contribute.</p>
+        </div>
+        <div className="sources__grid">
+          <a href="https://github.com/niefa-xyz/niefa" target="_blank" rel="noopener noreferrer" className="source-card">
+            <div className="source-card__icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </div>
+            <div className="source-card__info">
+              <span className="source-card__name">GitHub</span>
+              <span className="source-card__repo">niefa-xyz/niefa</span>
+            </div>
+            <span className="source-card__arrow">&gt;</span>
+          </a>
+          <a href="https://gitlawb.com/z6MktvfdARsR8Ld7dbEceswFg2pns738ThF722eM8wL1XddX/niefa" target="_blank" rel="noopener noreferrer" className="source-card">
+            <div className="source-card__icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div className="source-card__info">
+              <span className="source-card__name">GitLawb</span>
+              <span className="source-card__repo">Decentralized Mirror</span>
+            </div>
+            <span className="source-card__arrow">&gt;</span>
+          </a>
+        </div>
+        <div className="sources__clone">
+          <span className="sources__clone-label">Clone:</span>
+          <code className="sources__clone-cmd">git clone https://github.com/niefa-xyz/niefa.git</code>
         </div>
       </Section>
 
