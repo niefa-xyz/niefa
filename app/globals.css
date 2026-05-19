@@ -148,16 +148,9 @@ pre { font-family: var(--font); }
   width: 28px;
   height: 28px;
   border-radius: 4px;
-  overflow: hidden;
   flex-shrink: 0;
   border: 1px solid var(--c-border);
-  background: var(--c-surface);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: var(--c-accent);
+  object-fit: cover;
 }
 .nav__links { display: flex; align-items: center; gap: 28px; }
 .nav__links a {

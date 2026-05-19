@@ -129,13 +129,6 @@ const STEPS = [
 
 const TECH_BADGES = ['Next.js', 'FastAPI', 'LangChain', 'OpenClaude', 'MIMO', 'Tailwind', 'Docker', 'TypeScript']
 
-const COMMAND_HISTORY = [
-  { cmd: 'system --status', output: '[OK] All systems operational' },
-  { cmd: 'agents --list', output: 'Found 10,247 active agents across 42 regions' },
-  { cmd: 'uptime --check', output: '99.97% uptime over the last 365 days' },
-  { cmd: 'deploy --new --name ResearchBot', output: 'Agent \'ResearchBot\' deployed successfully (id: a7x9k2)' },
-  { cmd: 'tools --list', output: '52 tools available: web_search, code_exec, file_mgr, api_call...' },
-]
 
 const TASK_SEQUENCES: Record<string, string[]> = {
   research: [
@@ -514,7 +507,7 @@ export default function Home() {
       <nav className={`nav ${navScrolled ? 'nav--scrolled' : ''}`}>
         <div className="nav__inner">
           <a href="#" className="nav__brand">
-            <span className="nav__logo">N</span>
+            <img src="/niefa-logo.jpg" alt="NIEFA" className="nav__logo" />
             NIEFA
           </a>
           <div className={`nav__links ${menuOpen ? 'nav__links--open' : ''}`}>
@@ -560,54 +553,10 @@ export default function Home() {
               <a href="https://x.com/vornimbus" target="_blank" rel="noopener noreferrer" className="btn btn--outline">[ Follow on X ]</a>
             </div>
 
-            <div className="hero__metrics">
-              <div className="metric">
-                <span className="metric__value">10,247</span>
-                <span className="metric__label">Active Agents</span>
-              </div>
-              <span className="metric__sep">│</span>
-              <div className="metric">
-                <span className="metric__value">99.97%</span>
-                <span className="metric__label">Uptime</span>
-              </div>
-              <span className="metric__sep">│</span>
-              <div className="metric">
-                <span className="metric__value">52</span>
-                <span className="metric__label">Tools</span>
-              </div>
-              <span className="metric__sep">│</span>
-              <div className="metric">
-                <span className="metric__value">42</span>
-                <span className="metric__label">Regions</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* ─── Command History ─── */}
-      <Section className="cmd-history">
-        <div className="ascii-box">
-          <div className="ascii-box__top">┌─────────────────────────────────────────────────────────────────────────────┐</div>
-          <div className="ascii-box__content">
-            <div className="section-header">
-              <span className="section-tag">[try_it_now]</span>
-              <h2 className="section-heading">&gt; command_history.log_</h2>
-            </div>
-            <div className="cmd-history__list">
-              {COMMAND_HISTORY.map((item, i) => (
-                <div key={i} className="cmd-history__item">
-                  <div className="cmd-history__cmd">
-                    <span className="term-prompt">niefa@system:~$</span> {item.cmd}
-                  </div>
-                  <div className="cmd-history__output">{item.output}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="ascii-box__bot">└─────────────────────────────────────────────────────────────────────────────┘</div>
-        </div>
-      </Section>
 
       {/* ─── Deploy Section ─── */}
       <Section id="deploy" className="deploy">
@@ -649,8 +598,6 @@ export default function Home() {
                   <span className="status-dot" />
                   {deploying ? 'RUNNING' : 'COMPLETE'}
                 </span>
-                <span>CPU: 42%</span>
-                <span>MEM: 1.2GB</span>
                 <span>AGENTS: {agents.length}</span>
               </div>
               <LogViewer logs={deployLogs} />
