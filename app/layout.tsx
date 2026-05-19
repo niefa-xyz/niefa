@@ -4,6 +4,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'NIEFA — Neural Interference Engine for Agents',
   description: 'NIEFA — Neural Interference Engine for Agents. An open-source platform for building and deploying autonomous AI agents. Give your agent a goal and watch it think, plan, and execute — all in real time.',
+  icons: {
+    icon: '/icon.jpg',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
