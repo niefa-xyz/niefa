@@ -11,6 +11,11 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/niefa-xyz/niefa"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
+  <a href="https://gitlawb.com/z6MktvfdARsR8Ld7dbEceswFg2pns738ThF722eM8wL1XddX/niefa"><img src="https://img.shields.io/badge/GitLawb-Decentralized_Mirror-00ff41?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzAwZmY0MSI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01ek0yIDE3bDEwIDUgMTAtNU0yIDEybDEwIDUgMTAtNSIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjIiLz48L3N2Zz4=" alt="GitLawb Mirror" /></a>
+</p>
+
+<p align="center">
   <a href="https://niefa.xyz">Website</a> · <a href="#-quick-start">Quick Start</a> · <a href="https://x.com/niefa_xyz">X / Twitter</a>
 </p>
 
