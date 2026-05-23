@@ -31,3 +31,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# niefa runtime data (agent files, x402 registry)
+/data/afs/*
+!/data/afs/.gitkeep
+/data/x402-*.json
