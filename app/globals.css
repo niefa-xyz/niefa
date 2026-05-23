@@ -539,6 +539,96 @@ pre { font-family: var(--font); }
   font-family: var(--font-sans);
 }
 
+/* Bankr Integration */
+.bankr { padding: 80px 24px; }
+.bankr__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.bankr-card {
+  padding: 24px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 2px;
+  transition: all 0.3s var(--ease-out);
+  display: flex;
+  flex-direction: column;
+}
+.bankr-card:hover {
+  border-color: var(--c-cyan);
+  background: var(--c-surface-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 204, 204, 0.08);
+}
+.bankr-card__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.bankr-card__tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--c-cyan);
+  padding: 4px 8px;
+  background: rgba(0, 204, 204, 0.06);
+  border: 1px solid rgba(0, 204, 204, 0.18);
+  border-radius: 2px;
+}
+.bankr-card__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--c-text-bright);
+  letter-spacing: -0.01em;
+}
+.bankr-card__divider {
+  color: var(--c-border);
+  font-size: 0.6rem;
+  margin-bottom: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.bankr-card__desc {
+  font-size: 0.8rem;
+  color: var(--c-text-dim);
+  line-height: 1.65;
+  font-family: var(--font-sans);
+  margin-bottom: 16px;
+  flex: 1;
+}
+.bankr-card__link {
+  font-size: 0.75rem;
+  color: var(--c-cyan);
+  align-self: flex-start;
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 204, 204, 0.25);
+  border-radius: 2px;
+  transition: all 0.2s var(--ease-out);
+}
+.bankr-card__link:hover {
+  background: rgba(0, 204, 204, 0.08);
+  border-color: var(--c-cyan);
+}
+.bankr__footer {
+  max-width: 1000px;
+  margin: 32px auto 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+.bankr__footer-label { color: var(--c-text-dim); }
+.bankr__footer-link {
+  color: var(--c-cyan);
+  border-bottom: 1px dashed rgba(0, 204, 204, 0.4);
+  padding-bottom: 1px;
+}
+.bankr__footer-link:hover { color: var(--c-accent-2); }
+
 /* Templates */
 .templates { padding: 80px 24px; }
 .templates__grid {
@@ -1125,6 +1215,7 @@ pre { font-family: var(--font); }
 /* Responsive */
 @media (max-width: 900px) {
   .features__grid, .templates__grid { grid-template-columns: 1fr; max-width: 480px; }
+  .bankr__grid { grid-template-columns: 1fr; max-width: 480px; }
   .how__grid { grid-template-columns: repeat(2, 1fr); }
   .step__line { display: none; }
   .nav__links {

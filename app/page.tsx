@@ -118,6 +118,36 @@ const TEMPLATES = [
     tag: 'support',
     defaultGoal: 'Set up automated customer support responses for common SaaS onboarding questions',
   },
+  {
+    ascii: `  ┌──────────────┐
+  │  ╔═══╗  $$$ │
+  │  ║ B ║━━━▶  │
+  │  ╚═══╝ x402 │
+  │  ┌──┐ ┌──┐  │
+  │  │↑↓│ │ ¤│  │
+  │  └──┘ └──┘  │
+  └──────────────┘`,
+    title: 'Onchain Trader',
+    cmd: 'niefa --template onchain --bankr',
+    desc: 'Spin up a Bankr wallet, trade and custody crypto, and settle service calls via native x402 stablecoin rails.',
+    tag: 'onchain',
+    defaultGoal: 'Provision a Bankr wallet, monitor ETH/USDC pairs, and execute swaps when spreads exceed 2%',
+  },
+  {
+    ascii: `  ┌──────────────┐
+  │    ╭───╮  ⚡ │
+  │    │TKN│     │
+  │    ╰─┬─╯     │
+  │   [launch]   │
+  │   ░░▓▓▓▓░░   │
+  │   fees → $$  │
+  └──────────────┘`,
+    title: 'Token Launcher',
+    cmd: 'niefa --template token --bankr-api',
+    desc: 'Use the Bankr Partnership API to launch tokens, bootstrap liquidity, and capture fees and attention.',
+    tag: 'launch',
+    defaultGoal: 'Use the Bankr Partnership API to spin up an agent wallet and launch a token to bootstrap fees',
+  },
 ]
 
 const STEPS = [
@@ -127,7 +157,38 @@ const STEPS = [
   { num: '04', title: 'Deliver Results', desc: 'Receive polished outputs with full transparency into the agent\'s reasoning.', icon: '**' },
 ]
 
-const TECH_BADGES = ['Next.js', 'FastAPI', 'LangChain', 'OpenClaude', 'MIMO', 'Tailwind', 'Docker', 'TypeScript']
+const TECH_BADGES = ['Next.js', 'FastAPI', 'LangChain', 'OpenClaude', 'MIMO', 'Bankr', 'x402', 'Tailwind', 'Docker', 'TypeScript']
+
+const BANKR_CAPABILITIES = [
+  {
+    tag: '[PA]',
+    title: 'Partnership API',
+    desc: 'Spin up Bankr wallets and accounts for businesses or sub-agents you create. They can pay for inference via Bankr’s LLM gateway, launch tokens to generate fees and attention, and trade or custody crypto programmatically.',
+    docs: 'https://docs.bankr.bot/',
+    docsLabel: 'docs.bankr.bot',
+  },
+  {
+    tag: '[BW]',
+    title: 'Bankr Wallet & Skill',
+    desc: 'Mount the Bankr skill directly into your agent runtime to interact with onchain infra — sign transactions, manage balances, and execute trades without external glue code.',
+    docs: 'https://skills.bankr.bot/',
+    docsLabel: 'skills.bankr.bot',
+  },
+  {
+    tag: '[X4]',
+    title: 'x402 Payments',
+    desc: 'Expose paid x402 endpoints via Bankr’s x402 cloud, or use the Bankr wallet’s native x402 integration to settle service calls in stablecoins with zero ceremony.',
+    docs: 'https://docs.bankr.bot/',
+    docsLabel: 'docs.bankr.bot',
+  },
+  {
+    tag: '[FS]',
+    title: 'Agent File System',
+    desc: 'A web-based sandboxed file system dedicated to your agent — read, write, and persist artifacts across runs without standing up your own storage stack.',
+    docs: 'https://docs.bankr.bot/',
+    docsLabel: 'docs.bankr.bot',
+  },
+]
 
 
 const TASK_SEQUENCES: Record<string, string[]> = {
@@ -185,9 +246,27 @@ const TASK_SEQUENCES: Record<string, string[]> = {
     'Drafting personalized response...',
     'Queueing for human review if needed...',
   ],
+  onchain: [
+    'Provisioning Bankr wallet via Partnership API...',
+    'Loading onchain market data for target pairs...',
+    'Authorizing x402 stablecoin payment rails...',
+    'Computing optimal swap routes and slippage...',
+    'Executing onchain trades through Bankr skill...',
+    'Settling positions and recording PnL to Agent FS...',
+    'Streaming portfolio snapshot to dashboard...',
+  ],
+  launch: [
+    'Requesting Bankr Partnership API credentials...',
+    'Spinning up dedicated agent wallet and treasury...',
+    'Configuring token parameters and fee schedule...',
+    'Broadcasting token launch transaction...',
+    'Bootstrapping liquidity and attention via Bankr...',
+    'Monitoring fee accrual and onchain activity...',
+    'Reporting earnings to Agent FS for audit trail...',
+  ],
 }
 
-const TOOLS_LIST = ['Web Search', 'Code Exec', 'File Manager', 'API Client', 'Data Parser', 'Browser']
+const TOOLS_LIST = ['Web Search', 'Code Exec', 'File Manager', 'API Client', 'Browser', 'Bankr Wallet', 'x402', 'Agent FS']
 
 // ─── Hooks ─────────────────────────────────────────────────────────────────────
 
@@ -531,6 +610,7 @@ export default function Home() {
           <div className={`nav__links ${menuOpen ? 'nav__links--open' : ''}`}>
             <a href="#features" onClick={() => setMenuOpen(false)}>[features]</a>
             <a href="#templates" onClick={() => setMenuOpen(false)}>[templates]</a>
+            <a href="#bankr" onClick={() => setMenuOpen(false)}>[bankr]</a>
             <a href="#deploy" onClick={() => setMenuOpen(false)}>[deploy]</a>
             <a href="#token" onClick={() => setMenuOpen(false)}>[$NIEFA]</a>
             <a href="#sources" onClick={() => setMenuOpen(false)}>[source]</a>
@@ -691,6 +771,36 @@ export default function Home() {
               </div>
             </div>
           ))}
+        </div>
+      </Section>
+
+      {/* ─── Bankr Integration ─── */}
+      <Section id="bankr" className="bankr">
+        <div className="section-header">
+          <span className="section-tag">[bankr_integration]</span>
+          <h2 className="section-heading">&gt; Powered by Bankr_</h2>
+          <p className="section-sub">NIEFA agents plug straight into Bankr for wallets, payments, onchain execution, and persistent storage — no glue code required.</p>
+        </div>
+        <div className="bankr__grid">
+          {BANKR_CAPABILITIES.map((cap, i) => (
+            <div key={i} className="bankr-card">
+              <div className="bankr-card__head">
+                <span className="bankr-card__tag">{cap.tag}</span>
+                <h3 className="bankr-card__title">{cap.title}</h3>
+              </div>
+              <div className="bankr-card__divider">{'─'.repeat(60)}</div>
+              <p className="bankr-card__desc">{cap.desc}</p>
+              <a className="bankr-card__link" href={cap.docs} target="_blank" rel="noopener noreferrer">
+                &gt; {cap.docsLabel}
+              </a>
+            </div>
+          ))}
+        </div>
+        <div className="bankr__footer">
+          <span className="bankr__footer-label">Explore agents:</span>
+          <a className="bankr__footer-link" href="https://bankr.bot/agents" target="_blank" rel="noopener noreferrer">
+            bankr.bot/agents
+          </a>
         </div>
       </Section>
 
