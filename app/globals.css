@@ -629,6 +629,175 @@ pre { font-family: var(--font); }
 }
 .bankr__footer-link:hover { color: var(--c-accent-2); }
 
+/* Wallet Panel (real Bankr Wallet API) */
+.wallet-section { padding: 80px 24px; }
+.wallet-panel {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.82rem;
+}
+.wallet-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wallet-panel__label {
+  color: var(--c-cyan);
+  font-weight: 600;
+  min-width: 110px;
+}
+.wallet-panel__addr {
+  color: var(--c-text-bright);
+  word-break: break-all;
+  font-size: 0.78rem;
+}
+.wallet-panel__value { color: var(--c-accent); font-weight: 700; }
+.wallet-panel__ok {
+  color: var(--c-accent);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.wallet-panel__warn {
+  color: var(--c-amber);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.wallet-panel__empty p {
+  font-family: var(--font-sans);
+  color: var(--c-text-dim);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  margin-top: 8px;
+}
+.wallet-panel__empty code {
+  color: var(--c-accent);
+  background: rgba(0,255,65,0.06);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: 0.78rem;
+}
+.wallet-panel__snippet {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--c-border);
+  border-radius: 2px;
+  color: var(--c-text);
+  font-size: 0.78rem;
+  white-space: pre;
+  overflow-x: auto;
+}
+.wallet-panel__tokens { margin-top: 8px; }
+.wallet-panel__table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+.wallet-panel__table th,
+.wallet-panel__table td {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--c-border);
+}
+.wallet-panel__table th {
+  color: var(--c-text-dim);
+  font-weight: 600;
+  text-transform: lowercase;
+  letter-spacing: 0.03em;
+}
+.wallet-panel__table td { color: var(--c-text); }
+
+/* Token Launcher */
+.launch-section { padding: 80px 24px; }
+.launch-card {
+  max-width: 700px;
+  margin: 0 auto;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  padding: 24px;
+}
+.launch-card__error {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: rgba(255,51,51,0.06);
+  border: 1px solid rgba(255,51,51,0.25);
+  border-radius: 2px;
+  color: var(--c-red);
+  font-size: 0.78rem;
+  font-family: var(--font-sans);
+}
+.launch-card__result {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: rgba(0,255,65,0.04);
+  border: 1px solid rgba(0,255,65,0.2);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.82rem;
+}
+
+/* Agent card extensions */
+.agent-card__mode {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.agent-card__mode--live {
+  color: var(--c-cyan);
+  background: rgba(0, 204, 204, 0.08);
+  border-color: rgba(0, 204, 204, 0.3);
+}
+.agent-card__mode--sim {
+  color: var(--c-text-dim);
+  background: rgba(255,255,255,0.02);
+  border-color: var(--c-border);
+}
+.agent-card__job {
+  font-size: 0.72rem;
+  color: var(--c-text-dim);
+  margin-bottom: 8px;
+}
+.agent-card__job code {
+  color: var(--c-cyan);
+  background: rgba(0,204,204,0.06);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+.agent-card__response {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--c-border);
+}
+.agent-card__response pre {
+  margin-top: 6px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--c-border);
+  border-radius: 2px;
+  color: var(--c-text);
+  font-size: 0.76rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
 /* Templates */
 .templates { padding: 80px 24px; }
 .templates__grid {
