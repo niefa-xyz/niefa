@@ -2,6 +2,42 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 
+// ─── Types ─────────────────────────────────────────────────────────────────────
+
+type AgentStatus = 'initializing' | 'running' | 'thinking' | 'completed' | 'stopped'
+type AgentMode = 'live' | 'sim'
+
+interface Agent {
+  id: string
+  name: string
+  goal: string
+  status: AgentStatus
+  tasks: { text: string; done: boolean }[]
+  tools: string[]
+  mode: AgentMode
+  jobId?: string
+  threadId?: string
+  bankrResponse?: string
+}
+
+interface LogEntry { time: string; type: string; msg: string }
+interface WalletState {
+  loading: boolean
+  configured: boolean
+  address?: string
+  totalValue?: number
+  tokens?: Array<{ symbol: string; balance: string; usdValue?: number; chain?: string }>
+  error?: string
+}
+interface TokenLaunch {
+  name: string
+  symbol: string
+  description: string
+  launching: boolean
+  result?: { tokenAddress: string; poolAddress?: string; txHash?: string; chain?: string }
+  error?: string
+}
+
 // ─── Data ──────────────────────────────────────────────────────────────────────
 
 const ASCII_LOGO = `███╗   ██╗██╗███████╗███████╗ █████╗
@@ -413,7 +449,7 @@ function ProgressBar({ pct }: { pct: number }) {
 // ─── Agent Card ────────────────────────────────────────────────────────────────
 
 function AgentCard({ agent, onStop, onDelete }: {
-  agent: { id: string; name: string; goal: string; status: string; tasks: { text: string; done: boolean }[]; tools: string[] }
+  agent: Agent
   onStop: () => void
   onDelete: () => void
 }) {
@@ -437,6 +473,7 @@ function AgentCard({ agent, onStop, onDelete }: {
           <span className="agent-card__id">id: {agent.id}</span>
         </div>
         <div className="agent-card__meta">
+          <span className={`agent-card__mode agent-card__mode--${agent.mode}`}>{agent.mode === 'live' ? 'LIVE' : 'SIM'}</span>
           <span className="agent-card__status" style={{ color: statusColors[agent.status] }}>{agent.status.toUpperCase()}</span>
           <span className="agent-card__toggle">{expanded ? '[-]' : '[+]'}</span>
         </div>
@@ -466,6 +503,15 @@ function AgentCard({ agent, onStop, onDelete }: {
               </div>
             ))}
           </div>
+          {agent.jobId && (
+            <div className="agent-card__job"><span className="agent-card__label">bankr_job: </span><code>{agent.jobId}</code></div>
+          )}
+          {agent.bankrResponse && (
+            <div className="agent-card__response">
+              <span className="agent-card__label">response: </span>
+              <pre>{agent.bankrResponse}</pre>
+            </div>
+          )}
           {(agent.status === 'running' || agent.status === 'thinking') && (
             <div className="agent-card__actions">
               <button className="agent-card__btn agent-card__btn--stop" onClick={onStop}>[STOP]</button>
@@ -504,10 +550,12 @@ export default function Home() {
   const [agentName, setAgentName] = useState('')
   const [agentGoal, setAgentGoal] = useState('')
   const [selectedTools, setSelectedTools] = useState<string[]>(['Web Search', 'Code Exec'])
-  const [agents, setAgents] = useState<any[]>([])
-  const [deployLogs, setDeployLogs] = useState<any[]>([])
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [deployLogs, setDeployLogs] = useState<LogEntry[]>([])
   const [deploying, setDeploying] = useState(false)
   const deployRef = useRef<HTMLDivElement>(null)
+  const [wallet, setWallet] = useState<WalletState>({ loading: true, configured: false })
+  const [token, setToken] = useState<TokenLaunch>({ name: '', symbol: '', description: '', launching: false })
 
   const heroTexts = ['deploy --new --interactive', 'agents --spawn --goal "..."', 'tools --list --all']
   const heroTyped = useTypewriter(heroTexts, 50)
@@ -517,6 +565,70 @@ export default function Home() {
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Fetch wallet info on mount (gracefully handles missing API key)
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/bankr/wallet')
+        if (cancelled) return
+        if (res.status === 501) {
+          setWallet({ loading: false, configured: false })
+          return
+        }
+        if (!res.ok) {
+          setWallet({ loading: false, configured: true, error: `HTTP ${res.status}` })
+          return
+        }
+        const { info, portfolio } = await res.json()
+        setWallet({
+          loading: false,
+          configured: true,
+          address: info?.address,
+          totalValue: portfolio?.totalValue,
+          tokens: portfolio?.tokens,
+        })
+      } catch (err: any) {
+        if (!cancelled) setWallet({ loading: false, configured: true, error: err.message })
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const launchTokenHandler = useCallback(async () => {
+    if (!token.name.trim() || !token.symbol.trim()) return
+    setToken((t) => ({ ...t, launching: true, error: undefined, result: undefined }))
+    try {
+      const res = await fetch('/api/bankr/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: token.name,
+          symbol: token.symbol,
+          description: token.description,
+        }),
+      })
+      if (res.status === 501) {
+        setToken((t) => ({
+          ...t,
+          launching: false,
+          error: 'BANKR_API_KEY not configured. Set it in .env.local to launch real tokens.',
+        }))
+        return
+      }
+      const data = await res.json()
+      if (!res.ok) {
+        setToken((t) => ({ ...t, launching: false, error: data.error ?? `HTTP ${res.status}` }))
+        return
+      }
+      setToken((t) => ({ ...t, launching: false, result: data }))
+    } catch (err: any) {
+      setToken((t) => ({ ...t, launching: false, error: err.message }))
+    }
+  }, [token.name, token.symbol, token.description])
 
   const toggleTool = (tool: string) => {
     setSelectedTools(prev => prev.includes(tool) ? prev.filter(t => t !== tool) : [...prev, tool])
@@ -529,65 +641,185 @@ export default function Home() {
 
   const genId = () => Math.random().toString(36).slice(2, 7)
 
-  const handleDeploy = useCallback(() => {
+  const handleDeploy = useCallback(async () => {
     if (!agentGoal.trim()) return
     const id = genId()
     const name = agentName.trim() || `Agent-${id}`
-    const templateKey = TEMPLATES.find(t => agentGoal.includes(t.defaultGoal.slice(0, 20)))?.tag || 'planner'
-    const taskTexts = TASK_SEQUENCES[templateKey] || TASK_SEQUENCES.planner
 
-    const newAgent = {
-      id,
-      name,
-      goal: agentGoal,
-      status: 'initializing',
-      tasks: taskTexts.map(t => ({ text: t, done: false })),
-      tools: [...selectedTools],
-    }
-
-    setAgents(prev => [...prev, newAgent])
     setDeploying(true)
     setDeployLogs([])
 
-    // Simulate deployment
-    let taskIdx = 0
     const addLog = (type: string, msg: string) => {
       const now = new Date()
       const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
-      setDeployLogs(prev => [...prev, { time, type, msg }])
+      setDeployLogs((prev) => [...prev, { time, type, msg }])
     }
 
     addLog('info', `Deploying agent '${name}' (id: ${id})`)
     addLog('info', `Goal: ${agentGoal}`)
     addLog('info', `Tools: ${selectedTools.join(', ')}`)
 
-    setTimeout(() => {
-      addLog('info', 'Agent initialized. Starting autonomous execution...')
-      setAgents(prev => prev.map(a => a.id === id ? { ...a, status: 'running' } : a))
+    // Step 1: ask Bankr LLM Gateway to generate an execution plan
+    let taskTexts: string[] = []
+    let mode: AgentMode = 'sim'
 
-      const runTask = () => {
-        if (taskIdx >= taskTexts.length) {
-          addLog('info', 'All tasks completed successfully.')
-          addLog('info', 'Generating final output summary...')
-          setAgents(prev => prev.map(a => a.id === id ? { ...a, status: 'completed' } : a))
-          setDeploying(false)
-          return
+    try {
+      addLog('info', '> Querying Bankr LLM Gateway for execution plan...')
+      const planRes = await fetch('/api/bankr/llm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ goal: agentGoal }),
+      })
+      if (planRes.ok) {
+        const { plan } = await planRes.json()
+        if (Array.isArray(plan) && plan.length > 0) {
+          taskTexts = plan
+          mode = 'live'
+          addLog('info', `Plan generated via LLM Gateway — ${plan.length} steps`)
         }
+      } else if (planRes.status === 501) {
+        addLog('warn', 'BANKR_API_KEY not configured — running in simulation mode')
+      } else {
+        const { error } = await planRes.json().catch(() => ({ error: planRes.statusText }))
+        addLog('warn', `LLM Gateway error: ${error} — falling back to template`)
+      }
+    } catch (err: any) {
+      addLog('warn', `LLM Gateway unreachable: ${err.message} — falling back to template`)
+    }
 
-        setAgents(prev => prev.map(a => {
+    // Fallback to static task sequence if planning failed
+    if (taskTexts.length === 0) {
+      const templateKey =
+        TEMPLATES.find((t) => agentGoal.includes(t.defaultGoal.slice(0, 20)))?.tag || 'planner'
+      taskTexts = TASK_SEQUENCES[templateKey] || TASK_SEQUENCES.planner
+    }
+
+    const newAgent: Agent = {
+      id,
+      name,
+      goal: agentGoal,
+      status: 'initializing',
+      tasks: taskTexts.map((t) => ({ text: t, done: false })),
+      tools: [...selectedTools],
+      mode,
+    }
+    setAgents((prev) => [...prev, newAgent])
+
+    // Step 2: submit to Bankr Agent API (only if live)
+    let jobId: string | undefined
+    let threadId: string | undefined
+
+    if (mode === 'live') {
+      try {
+        addLog('info', '> Submitting goal to Bankr Agent API...')
+        const agentRes = await fetch('/api/bankr/agent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: `${agentGoal}\n\nAvailable tools: ${selectedTools.join(', ')}`,
+          }),
+        })
+        if (agentRes.ok) {
+          const data = await agentRes.json()
+          jobId = data.jobId
+          threadId = data.threadId
+          addLog('info', `Agent queued. Bankr job: ${jobId}`)
+          setAgents((prev) =>
+            prev.map((a) => (a.id === id ? { ...a, jobId, threadId, status: 'running' } : a)),
+          )
+        } else {
+          const { error } = await agentRes.json().catch(() => ({ error: agentRes.statusText }))
+          addLog('warn', `Agent API error: ${error}`)
+        }
+      } catch (err: any) {
+        addLog('warn', `Agent API unreachable: ${err.message}`)
+      }
+    }
+
+    if (!jobId) {
+      setAgents((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'running' } : a)))
+    }
+
+    // Step 3: visual task progression (always runs for UX)
+    let taskIdx = 0
+    const tick = () => {
+      if (taskIdx >= taskTexts.length) {
+        if (!jobId) {
+          addLog('info', 'All tasks completed.')
+          setAgents((prev) =>
+            prev.map((a) => (a.id === id ? { ...a, status: 'completed' } : a)),
+          )
+          setDeploying(false)
+        }
+        // if jobId is set, the poller below will close out
+        return
+      }
+      setAgents((prev) =>
+        prev.map((a) => {
           if (a.id !== id) return a
           const tasks = [...a.tasks]
           if (taskIdx > 0) tasks[taskIdx - 1] = { ...tasks[taskIdx - 1], done: true }
           return { ...a, tasks, status: taskIdx % 3 === 1 ? 'thinking' : 'running' }
-        }))
+        }),
+      )
+      addLog(taskIdx % 3 === 1 ? 'warn' : 'info', taskTexts[taskIdx])
+      taskIdx++
+      setTimeout(tick, 1200 + Math.random() * 800)
+    }
+    setTimeout(tick, 500)
 
-        addLog(taskIdx % 3 === 1 ? 'warn' : 'info', taskTexts[taskIdx])
-        taskIdx++
-        setTimeout(runTask, 1200 + Math.random() * 800)
+    // Step 4: poll Bankr job (only if live)
+    if (jobId) {
+      const startedAt = Date.now()
+      const poll = async () => {
+        if (Date.now() - startedAt > 5 * 60 * 1000) {
+          addLog('warn', 'Bankr job poll timeout (5m). Stopping.')
+          setAgents((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'stopped' } : a)))
+          setDeploying(false)
+          return
+        }
+        try {
+          const res = await fetch(`/api/bankr/job/${jobId}`)
+          if (!res.ok) {
+            setTimeout(poll, 3000)
+            return
+          }
+          const job = await res.json()
+          if (job.status === 'completed') {
+            addLog('info', '─'.repeat(40))
+            addLog('info', 'BANKR AGENT RESPONSE:')
+            const lines = String(job.response ?? '').split('\n').filter(Boolean)
+            lines.forEach((l: string) => addLog('info', l))
+            addLog('info', '─'.repeat(40))
+            // mark all visual tasks done
+            setAgents((prev) =>
+              prev.map((a) =>
+                a.id === id
+                  ? {
+                      ...a,
+                      status: 'completed',
+                      bankrResponse: job.response,
+                      tasks: a.tasks.map((t) => ({ ...t, done: true })),
+                    }
+                  : a,
+              ),
+            )
+            setDeploying(false)
+          } else if (job.status === 'failed' || job.status === 'cancelled') {
+            addLog('warn', `Bankr job ${job.status}: ${job.response ?? 'no detail'}`)
+            setAgents((prev) =>
+              prev.map((a) => (a.id === id ? { ...a, status: 'stopped' } : a)),
+            )
+            setDeploying(false)
+          } else {
+            setTimeout(poll, 2500)
+          }
+        } catch {
+          setTimeout(poll, 3000)
+        }
       }
-
-      setTimeout(runTask, 500)
-    }, 1000)
+      setTimeout(poll, 2500)
+    }
   }, [agentName, agentGoal, selectedTools])
 
   const stopAgent = (id: string) => {
@@ -611,6 +843,8 @@ export default function Home() {
             <a href="#features" onClick={() => setMenuOpen(false)}>[features]</a>
             <a href="#templates" onClick={() => setMenuOpen(false)}>[templates]</a>
             <a href="#bankr" onClick={() => setMenuOpen(false)}>[bankr]</a>
+            <a href="#wallet" onClick={() => setMenuOpen(false)}>[wallet]</a>
+            <a href="#launch" onClick={() => setMenuOpen(false)}>[launch]</a>
             <a href="#deploy" onClick={() => setMenuOpen(false)}>[deploy]</a>
             <a href="#token" onClick={() => setMenuOpen(false)}>[$NIEFA]</a>
             <a href="#sources" onClick={() => setMenuOpen(false)}>[source]</a>
@@ -801,6 +1035,114 @@ export default function Home() {
           <a className="bankr__footer-link" href="https://bankr.bot/agents" target="_blank" rel="noopener noreferrer">
             bankr.bot/agents
           </a>
+        </div>
+      </Section>
+
+      {/* ─── Wallet Dashboard (real Bankr Wallet API) ─── */}
+      <Section id="wallet" className="wallet-section">
+        <div className="section-header">
+          <span className="section-tag">[wallet_api]</span>
+          <h2 className="section-heading">&gt; Agent Wallet_</h2>
+          <p className="section-sub">Live wallet state pulled from <code>GET /wallet/me</code> and <code>GET /wallet/portfolio</code> via the Bankr Wallet API.</p>
+        </div>
+        <div className="wallet-panel">
+          {wallet.loading ? (
+            <div className="wallet-panel__row"><span className="wallet-panel__label">status:</span> <span className="thinking-dots"><span /><span /><span /></span> querying Bankr...</div>
+          ) : !wallet.configured ? (
+            <div className="wallet-panel__empty">
+              <div className="wallet-panel__row"><span className="wallet-panel__label">status:</span> <span className="wallet-panel__warn">NOT CONFIGURED</span></div>
+              <p>Set <code>BANKR_API_KEY</code> in <code>.env.local</code> to enable live wallet, agent execution, and token launching. See <a href="https://bankr.bot/api" target="_blank" rel="noopener noreferrer">bankr.bot/api</a>.</p>
+              <pre className="wallet-panel__snippet">{`# .env.local
+BANKR_API_KEY=bk_your_api_key_here`}</pre>
+            </div>
+          ) : wallet.error ? (
+            <div className="wallet-panel__row"><span className="wallet-panel__label">error:</span> <span className="wallet-panel__warn">{wallet.error}</span></div>
+          ) : (
+            <>
+              <div className="wallet-panel__row">
+                <span className="wallet-panel__label">status:</span>
+                <span className="wallet-panel__ok">CONNECTED</span>
+              </div>
+              {wallet.address && (
+                <div className="wallet-panel__row">
+                  <span className="wallet-panel__label">address:</span>
+                  <code className="wallet-panel__addr">{wallet.address}</code>
+                  <CopyButton text={wallet.address} />
+                </div>
+              )}
+              {typeof wallet.totalValue === 'number' && (
+                <div className="wallet-panel__row">
+                  <span className="wallet-panel__label">portfolio_usd:</span>
+                  <span className="wallet-panel__value">${wallet.totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                </div>
+              )}
+              {wallet.tokens && wallet.tokens.length > 0 && (
+                <div className="wallet-panel__tokens">
+                  <div className="wallet-panel__label">tokens:</div>
+                  <table className="wallet-panel__table">
+                    <thead><tr><th>symbol</th><th>chain</th><th>balance</th><th>usd</th></tr></thead>
+                    <tbody>
+                      {wallet.tokens.slice(0, 10).map((t, i) => (
+                        <tr key={i}>
+                          <td>{t.symbol}</td>
+                          <td>{t.chain ?? '—'}</td>
+                          <td>{t.balance}</td>
+                          <td>{typeof t.usdValue === 'number' ? `$${t.usdValue.toFixed(2)}` : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </Section>
+
+      {/* ─── Token Launcher (real Bankr Token Launching) ─── */}
+      <Section id="launch" className="launch-section">
+        <div className="section-header">
+          <span className="section-tag">[token_launching]</span>
+          <h2 className="section-heading">&gt; Launch a Token_</h2>
+          <p className="section-sub">Deploy a token on Base via <code>POST /token-launches/deploy</code>. Earn 57% of the 1.2% swap fee. 100B fixed supply.</p>
+        </div>
+        <div className="deploy__card launch-card">
+          <div className="deploy__field">
+            <label className="deploy__label"><span className="deploy__label-key">name:</span></label>
+            <input className="deploy__input" placeholder="My Agent Token" value={token.name} onChange={(e) => setToken({ ...token, name: e.target.value })} />
+          </div>
+          <div className="deploy__field">
+            <label className="deploy__label"><span className="deploy__label-key">symbol:</span></label>
+            <input className="deploy__input" placeholder="MAT" maxLength={10} value={token.symbol} onChange={(e) => setToken({ ...token, symbol: e.target.value.toUpperCase() })} />
+          </div>
+          <div className="deploy__field">
+            <label className="deploy__label"><span className="deploy__label-key">description:</span></label>
+            <textarea className="deploy__textarea" rows={2} placeholder="optional — what this token is for" value={token.description} onChange={(e) => setToken({ ...token, description: e.target.value })} />
+          </div>
+          <button className="deploy__submit" onClick={launchTokenHandler} disabled={token.launching || !token.name.trim() || !token.symbol.trim()}>
+            {token.launching ? '[DEPLOYING TO BASE...]' : '[LAUNCH TOKEN]'}
+          </button>
+          {token.error && <div className="launch-card__error">{token.error}</div>}
+          {token.result && (
+            <div className="launch-card__result">
+              <div className="wallet-panel__row"><span className="wallet-panel__label">deployed:</span> <span className="wallet-panel__ok">OK</span></div>
+              <div className="wallet-panel__row">
+                <span className="wallet-panel__label">token_address:</span>
+                <code className="wallet-panel__addr">{token.result.tokenAddress}</code>
+                <CopyButton text={token.result.tokenAddress} />
+              </div>
+              {token.result.txHash && (
+                <div className="wallet-panel__row">
+                  <span className="wallet-panel__label">tx:</span>
+                  <code className="wallet-panel__addr">{token.result.txHash}</code>
+                </div>
+              )}
+              <div className="wallet-panel__row">
+                <span className="wallet-panel__label">chain:</span>
+                <span>{token.result.chain ?? 'Base'}</span>
+              </div>
+            </div>
+          )}
         </div>
       </Section>
 

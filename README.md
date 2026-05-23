@@ -80,6 +80,44 @@ execution, and persistent storage. See [docs.bankr.bot](https://docs.bankr.bot/)
 | **[X4]** | x402 Payments | Expose paid x402 endpoints via Bankr's x402 cloud, or use the Bankr wallet's native x402 integration to settle service calls in stablecoins with zero ceremony. |
 | **[FS]** | Agent File System | A web-based sandboxed file system dedicated to your agent — read, write, and persist artifacts across runs without standing up your own storage stack. |
 
+### Live wiring (not just marketing)
+
+NIEFA ships server-side API routes that proxy the real Bankr endpoints. Set `BANKR_API_KEY` in
+`.env.local` and the UI flips from simulation to live execution.
+
+| Next.js route | Bankr endpoint | Purpose |
+|---|---|---|
+| `POST /api/bankr/llm` | `POST https://llm.bankr.bot/v1/chat/completions` | LLM Gateway — generates the agent's execution plan from your goal |
+| `POST /api/bankr/agent` | `POST https://api.bankr.bot/agent/prompt` | Submits the goal to Bankr's autonomous agent |
+| `GET /api/bankr/job/[id]` | `GET https://api.bankr.bot/agent/job/{id}` | Polls job status until `completed`/`failed` |
+| `GET /api/bankr/wallet` | `GET /wallet/me` + `GET /wallet/portfolio` | Live wallet address, balances, USD value |
+| `POST /api/bankr/token` | `POST /token-launches/deploy` | Deploys an ERC-20 on Base with 1.2% swap fee (57% creator) |
+| `GET /api/bankr/token/[addr]/fees` | `GET /token-launches/{addr}/fees` | Reads claimable fees |
+| `POST /api/bankr/token/[addr]/fees` | `POST /token-launches/{addr}/fees/claim` | Claims accrued fees to your wallet |
+
+**Deploy flow (live mode):**
+
+1. User submits a goal in `/#deploy`
+2. NIEFA calls the **LLM Gateway** (`claude-haiku-4-5`) to break the goal into 5–7 ordered steps
+3. NIEFA submits the same goal to the **Agent API** and receives a `jobId`
+4. The browser polls `/api/bankr/job/{jobId}` every ~2.5s until the agent finishes
+5. The real Bankr response is streamed into the agent card as it completes
+
+When `BANKR_API_KEY` is absent, every route returns `501 Not Configured` and the UI falls back to
+the original simulated task sequence, so the demo never breaks.
+
+### Quick start with live Bankr
+
+```bash
+cp .env.example .env.local
+# edit .env.local and paste your key from bankr.bot/api
+npm install
+npm run dev
+```
+
+Then open `/#wallet` to confirm `CONNECTED`, `/#launch` to deploy a token, and `/#deploy` to run an
+agent goal end-to-end against Bankr.
+
 ## How It Works
 
 ```
