@@ -64,6 +64,21 @@ Jump-start your workflow with pre-built configurations:
 | **Data Miner** | Scrape, clean, analyze web data at scale | `niefa --template datamine` |
 | **Project Planner** | Roadmaps with timelines and dependencies | `niefa --template planner` |
 | **Customer Support** | Handle inquiries with human-like conversation | `niefa --template support` |
+| **Onchain Trader** | Bankr wallet + x402 stablecoin payments for trading | `niefa --template onchain --bankr` |
+| **Token Launcher** | Launch tokens via Bankr Partnership API | `niefa --template token --bankr-api` |
+
+## Bankr Integration
+
+NIEFA agents plug straight into [Bankr](https://bankr.bot/agents) for wallets, payments, onchain
+execution, and persistent storage. See [docs.bankr.bot](https://docs.bankr.bot/) and
+[skills.bankr.bot](https://skills.bankr.bot/) for full reference.
+
+| | Capability | Description |
+|---|---|---|
+| **[PA]** | Partnership API | Spin up Bankr wallets and accounts for businesses or sub-agents. They can pay for inference through Bankr's LLM gateway, launch tokens to generate fees and attention, and trade or custody crypto programmatically. |
+| **[BW]** | Bankr Wallet & Skill | Mount the Bankr skill directly into your agent runtime to interact with onchain infra — sign transactions, manage balances, and execute trades without external glue code. |
+| **[X4]** | x402 Payments | Expose paid x402 endpoints via Bankr's x402 cloud, or use the Bankr wallet's native x402 integration to settle service calls in stablecoins with zero ceremony. |
+| **[FS]** | Agent File System | A web-based sandboxed file system dedicated to your agent — read, write, and persist artifacts across runs without standing up your own storage stack. |
 
 ## How It Works
 
@@ -98,7 +113,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the NIEFA dashboard.
 
 ## Tech Stack
 
-`Next.js` · `TypeScript` · `FastAPI` · `LangChain` · `Docker` · `Tailwind`
+`Next.js` · `TypeScript` · `FastAPI` · `LangChain` · `Bankr` · `x402` · `Docker` · `Tailwind`
 
 ## Deploy
 
